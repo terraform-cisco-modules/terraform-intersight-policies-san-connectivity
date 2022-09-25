@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Fibre-Channel Pool Example
+# SAN Connectivity Policy Example
 
 To run this example you need to execute:
 
@@ -13,23 +13,45 @@ Note that this example will create resources. Resources can be destroyed with `t
 
 ### main.tf
 ```hcl
-module "wwpn_pool" {
-  source  = "scotttyso/pools-fc/intersight"
+module "san_connectivity" {
+  source  = "terraform-cisco-modules/policies-san-connectivity/intersight"
   version = ">= 1.0.1"
 
-  assignment_order = "sequential"
-  description      = "Demo WWPN Pool"
-  id_blocks = [
-    {
-      from = "0:00:00:25:B5:00:00:00"
-      size = 1000
-    }
-  ]
+  description  = "default SAN Connectivity Policy."
   name         = "default"
   organization = "default"
-  pool_purpose = "WWPN"
+  vhbas = [{
+    fc_zone_policies             = []
+    fibre_channel_adapter_policy = "default"
+    fibre_channel_network_policy = "default"
+    fibre_channel_qos_policy     = "default"
+    name                         = "vHBA-A"
+    persistent_lun_bindings      = false
+    placement_pci_link           = 0
+    placement_pci_order          = 0
+    placement_slot_id            = "MLOM"
+    placement_switch_id          = "A"
+    placement_uplink_port        = 0
+    vhba_type                    = "fc-initiator"
+    wwpn_allocation_type         = "POOL"
+    wwpn_pool                    = "default"
+    wwpn_static_address          = ""
+  }]
+  wwnn_pool = "default"
 }
+```
 
+### provider.tf
+```hcl
+terraform {
+  required_providers {
+    intersight = {
+      source  = "CiscoDevNet/intersight"
+      version = ">=1.0.32"
+    }
+  }
+  required_version = ">=1.3.0"
+}
 ```
 
 ### variables.tf
@@ -50,24 +72,6 @@ variable "secretkey" {
   description = "Intersight Secret Key."
   sensitive   = true
   type        = string
-}
-```
-
-### versions.tf
-```hcl
-terraform {
-  required_providers {
-    intersight = {
-      source  = "CiscoDevNet/intersight"
-      version = ">=1.0.32"
-    }
-  }
-}
-
-provider "intersight" {
-  apikey    = var.apikey
-  endpoint  = var.endpoint
-  secretkey = var.secretkey
 }
 ```
 <!-- END_TF_DOCS -->

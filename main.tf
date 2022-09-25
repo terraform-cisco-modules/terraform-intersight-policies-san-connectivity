@@ -149,17 +149,17 @@ resource "intersight_vnic_fc_if" "vhbas" {
   fc_adapter_policy {
     moid = data.intersight_vnic_fc_adapter_policy.fibre_channel_adapter[
       each.value.fibre_channel_adapter_policy
-    ].moid
+    ].results[0].moid
   }
   fc_network_policy {
     moid = data.intersight_vnic_fc_network_policy.fibre_channel_network[
       each.value.fibre_channel_network_policy
-    ].moid
+    ].results[0].moid
   }
   fc_qos_policy {
     moid = data.intersight_vnic_fc_qos_policy.fibre_channel_qos[
       each.value.fibre_channel_qos_policy
-    ].moid
+    ].results[0].moid
   }
   san_connectivity_policy {
     moid = intersight_vnic_san_connectivity_policy.san_connectivity.moid
