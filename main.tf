@@ -44,33 +44,57 @@ locals {
 }
 
 data "intersight_fabric_fc_zone_policy" "fc_zone" {
-  for_each = { for v in local.fc_zone_policies : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.fc_zone_policies : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_fcpool_pool" "wwnn" {
-  for_each = { for v in compact([var.wwnn_pool]) : v => v }
-  name     = each.value
+  for_each = {
+    for v in compact([var.wwnn_pool]) : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_fcpool_pool" "wwpn" {
-  for_each = { for v in local.wwpn_pools : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.wwpn_pools : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_vnic_fc_adapter_policy" "fibre_channel_adapter" {
-  for_each = { for v in local.fibre_channel_adapter : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.fibre_channel_adapter : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_vnic_fc_network_policy" "fibre_channel_network" {
-  for_each = { for v in local.fibre_channel_network : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.fibre_channel_network : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 data "intersight_vnic_fc_qos_policy" "fibre_channel_qos" {
-  for_each = { for v in local.fibre_channel_qos : v => v }
-  name     = each.value
+  for_each = {
+    for v in local.fibre_channel_qos : v => v if length(
+      regexall("[[:xdigit:]]{24}", v)
+    ) == 0
+  }
+  name = each.value
 }
 
 
@@ -119,7 +143,9 @@ resource "intersight_vnic_san_connectivity_policy" "san_connectivity" {
   dynamic "wwnn_pool" {
     for_each = { for v in compact([var.wwnn_pool]) : v => v }
     content {
-      moid = data.intersight_fcpool_pool.wwnn[wwnn_pool.value].results[0].moid
+      moid = length(
+        regexall("[[:xdigit:]]{24}", wwnn_pool.value)
+      ) > 0 ? wwnn_pool.value : data.intersight_fcpool_pool.wwnn[wwnn_pool.value].results[0].moid
     }
   }
 }
@@ -147,17 +173,23 @@ resource "intersight_vnic_fc_if" "vhbas" {
   type                = each.value.vhba_type
   wwpn_address_type   = each.value.wwpn_allocation_type
   fc_adapter_policy {
-    moid = data.intersight_vnic_fc_adapter_policy.fibre_channel_adapter[
+    moid = length(
+      regexall("[[:xdigit:]]{24}", each.value.fibre_channel_adapter_policy)
+      ) > 0 ? each.value.fibre_channel_adapter_policy : data.intersight_vnic_fc_adapter_policy.fibre_channel_adapter[
       each.value.fibre_channel_adapter_policy
     ].results[0].moid
   }
   fc_network_policy {
-    moid = data.intersight_vnic_fc_network_policy.fibre_channel_network[
+    moid = length(
+      regexall("[[:xdigit:]]{24}", each.value.fibre_channel_network_policy)
+      ) > 0 ? each.value.fibre_channel_network_policy : data.intersight_vnic_fc_network_policy.fibre_channel_network[
       each.value.fibre_channel_network_policy
     ].results[0].moid
   }
   fc_qos_policy {
-    moid = data.intersight_vnic_fc_qos_policy.fibre_channel_qos[
+    moid = length(
+      regexall("[[:xdigit:]]{24}", each.value.fibre_channel_qos_policy)
+      ) > 0 ? each.value.fibre_channel_qos_policy : data.intersight_vnic_fc_qos_policy.fibre_channel_qos[
       each.value.fibre_channel_qos_policy
     ].results[0].moid
   }
@@ -173,13 +205,19 @@ resource "intersight_vnic_fc_if" "vhbas" {
   dynamic "fc_zone_policies" {
     for_each = toset(each.value.fc_zone_policies)
     content {
-      moid = data.intersight_fabric_fc_zone_policy.fc_zone_policies[fc_zone_policies.value].moid
+      moid = length(
+        regexall("[[:xdigit:]]{24}", fc_zone_policies.value)
+        ) > 0 ? fc_zone_policies.value : data.intersight_fabric_fc_zone_policy.fc_zone_policies[
+        fc_zone_policies.value
+      ].moid
     }
   }
   dynamic "wwpn_pool" {
     for_each = { for v in compact([each.value.wwpn_pool]) : v => v }
     content {
-      moid = data.intersight_fcpool_pool.wwpn[wwpn_pool.value].results[0].moid
+      moid = length(
+        regexall("[[:xdigit:]]{24}", wwpn_pool.value)
+      ) > 0 ? wwpn_pool.value : data.intersight_fcpool_pool.wwpn[wwpn_pool.value].results[0].moid
     }
   }
 }
