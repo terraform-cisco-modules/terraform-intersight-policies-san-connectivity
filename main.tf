@@ -40,23 +40,29 @@ locals {
   vhbas = flatten([
     for v in var.vhbas : [
       for s in range(length(v.names)) : {
-        fc_zone_policies             = v.fc_zone_policies
+        fc_zone_policies             = length(v.fc_zone_policies) > 0 ? element(chunklist(v.fc_zone_policies, 2), s) : []
         fibre_channel_adapter_policy = v.fibre_channel_adapter_policy
         fibre_channel_network_policy = v.fibre_channel_network_policy
         fibre_channel_qos_policy     = v.fibre_channel_qos_policy
         name                         = element(v.names, s)
         persistent_lun_bindings      = v.persistent_lun_bindings
-        placement_pci_link           = v.placement_pci_link
-        placement_pci_order          = element(v.placement_pci_order, s)
-        placement_slot_id            = v.placement_slot_id
+        placement_pci_link = length(v.placement_pci_link) == 1 ? element(
+          v.placement_pci_link, 0) : element(v.placement_pci_link, s
+        )
+        placement_pci_order = element(v.placement_pci_order, s)
+        placement_slot_id = length(v.placement_slot_id) == 1 ? element(
+          v.placement_slot_id, 0) : element(v.placement_slot_id, s
+        )
         placement_switch_id = length(compact(
           [v.placement_switch_id])
         ) > 0 ? v.placement_switch_id : index(v.names, element([v.names], s)) == 0 ? "A" : "B"
-        placement_uplink_port = v.placement_uplink_port
-        vhba_type             = v.vhba_type
-        wwpn_allocation_type  = v.wwpn_allocation_type
-        wwpn_pool             = length(v.wwpn_pool) > 0 ? element(v.wwpn_pool, s) : ""
-        wwpn_static_address   = length(v.wwpn_static_address) > 0 ? element(v.wwpn_static_address, s) : ""
+        placement_uplink_port = length(v.placement_uplink_port) == 1 ? element(
+          v.placement_uplink_port, 0) : element(v.placement_uplink_port, s
+        )
+        vhba_type            = v.vhba_type
+        wwpn_allocation_type = v.wwpn_allocation_type
+        wwpn_pool            = length(v.wwpn_pools) > 0 ? element(v.wwpn_pools, s) : ""
+        wwpn_static_address  = length(v.wwpn_static_address) > 0 ? element(v.wwpn_static_address, s) : ""
       }
     ]
   ])

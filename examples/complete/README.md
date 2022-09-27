@@ -28,7 +28,7 @@ module "san_connectivity" {
     names                        = ["vHBA-A", "vHBA-B"]
     persistent_lun_bindings      = false
     placement_pci_order          = [0, 1]
-    placement_slot_id            = "MLOM"
+    placement_slot_id            = ["MLOM"]
     vhba_type                    = "fc-initiator"
     wwpn_allocation_type         = "POOL"
     wwpn_pools                   = ["default", "default"]
