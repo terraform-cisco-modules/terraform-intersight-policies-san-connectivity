@@ -71,26 +71,7 @@ variable "vhba_placement_mode" {
 }
 
 variable "vhbas" {
-  default = []
-  /*
-    {
-      fc_zone_policies             = []
-      fibre_channel_adapter_policy = "**REQUIRED**"
-      fibre_channel_network_policy = "**REQUIRED**"
-      fibre_channel_qos_policy     = "**REQUIRED**"
-      name                         = "vhba"
-      persistent_lun_bindings      = false
-      placement_pci_link           = 0
-      placement_pci_order          = 0
-      placement_slot_id            = "MLOM"
-      placement_switch_id          = "None"
-      placement_uplink_port        = 0
-      vhba_type                    = "fc-initiator"
-      wwpn_allocation_type         = "POOL"
-      wwpn_pool                    = ""
-      wwpn_static_address          = ""
-    }
-    */
+  default     = []
   description = <<-EOT
     List of vHBAs to add to the SAN Connectivity Policy.
     * fc_zone_policies - List of FC Zone Policy Names to attach to the vHBA.
@@ -119,21 +100,21 @@ variable "vhbas" {
   EOT
   type = list(object(
     {
-      fc_zone_policies             = optional(list(string))
+      fc_zone_policies             = optional(list(string), [])
       fibre_channel_adapter_policy = string
       fibre_channel_network_policy = string
       fibre_channel_qos_policy     = string
-      name                         = string
+      names                        = list(string)
       persistent_lun_bindings      = optional(bool, false)
       placement_pci_link           = optional(number, 0)
-      placement_pci_order          = optional(number, 0)
+      placement_pci_order          = optional(list(string), [0, 1])
       placement_slot_id            = optional(string, "MLOM")
       placement_switch_id          = optional(string)
-      placement_uplink_port        = optional(number)
-      vhba_type                    = optional(string)
-      wwpn_allocation_type         = optional(string)
-      wwpn_pool                    = optional(string)
-      wwpn_static_address          = optional(string)
+      placement_uplink_port        = optional(number, 0)
+      vhba_type                    = optional(string, "fc-initiator")
+      wwpn_allocation_type         = optional(string, "POOL")
+      wwpn_pools                   = optional(list(string))
+      wwpn_static_addresss         = optional(string)
     }
   ))
 }

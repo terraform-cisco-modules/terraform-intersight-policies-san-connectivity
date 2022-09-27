@@ -36,11 +36,36 @@ data "intersight_server_profile_template" "templates" {
 }
 
 locals {
-  fibre_channel_adapter = toset(compact([for v in var.vhbas : v.fibre_channel_adapter_policy]))
-  fibre_channel_network = toset(compact([for v in var.vhbas : v.fibre_channel_network_policy]))
-  fibre_channel_qos     = toset(compact([for v in var.vhbas : v.fibre_channel_qos_policy]))
-  fc_zone_policies      = toset(compact(flatten([for v in var.vhbas : v.fc_zone_policies])))
-  wwpn_pools            = toset(compact([for v in var.vhbas : v.wwpn_pool]))
+  # Loop to Split vHBAs defined as a Pair
+  vhbas = flatten([
+    for v in var.vhbas : [
+      for s in range(length(v.names)) : {
+        fc_zone_policies             = v.fc_zone_policies
+        fibre_channel_adapter_policy = v.fibre_channel_adapter_policy
+        fibre_channel_network_policy = v.fibre_channel_network_policy
+        fibre_channel_qos_policy     = v.fibre_channel_qos_policy
+        name                         = element(v.names, s)
+        persistent_lun_bindings      = v.persistent_lun_bindings
+        placement_pci_link           = v.placement_pci_link
+        placement_pci_order          = element(v.placement_pci_order, s)
+        placement_slot_id            = v.placement_slot_id
+        placement_switch_id = length(compact(
+          [v.placement_switch_id])
+        ) > 0 ? v.placement_switch_id : index(v.names, element([v.names], s)) == 0 ? "A" : "B"
+        placement_uplink_port = v.placement_uplink_port
+        vhba_type             = v.vhba_type
+        wwpn_allocation_type  = v.wwpn_allocation_type
+        wwpn_pool             = length(v.wwpn_pool) > 0 ? element(v.wwpn_pool, s) : ""
+        wwpn_static_address   = length(v.wwpn_static_address) > 0 ? element(v.wwpn_static_address, s) : ""
+      }
+    ]
+  ])
+
+  fibre_channel_adapter = toset(compact([for v in local.vhbas : v.fibre_channel_adapter_policy]))
+  fibre_channel_network = toset(compact([for v in local.vhbas : v.fibre_channel_network_policy]))
+  fibre_channel_qos     = toset(compact([for v in local.vhbas : v.fibre_channel_qos_policy]))
+  fc_zone_policies      = toset(compact(flatten([for v in local.vhbas : v.fc_zone_policies])))
+  wwpn_pools            = toset(compact([for v in local.vhbas : v.wwpn_pool]))
 }
 
 data "intersight_fabric_fc_zone_policy" "fc_zone" {
@@ -165,7 +190,7 @@ resource "intersight_vnic_fc_if" "vhbas" {
     data.intersight_vnic_fc_qos_policy.fibre_channel_qos,
     intersight_vnic_san_connectivity_policy.san_connectivity
   ]
-  for_each            = { for v in var.vhbas : v.name => v }
+  for_each            = { for v in local.vhbas : v.name => v }
   name                = each.key
   order               = each.value.placement_pci_order
   persistent_bindings = each.value.persistent_lun_bindings
