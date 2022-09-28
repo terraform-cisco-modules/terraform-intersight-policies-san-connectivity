@@ -10,7 +10,7 @@ variable "description" {
 }
 
 variable "name" {
-  default     = "san_connectivity"
+  default     = "default"
   description = "Name for the Policy."
   type        = string
 }
