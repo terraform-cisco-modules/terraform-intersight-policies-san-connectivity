@@ -1,6 +1,6 @@
 #____________________________________________________________
 #
-# Ethernet SAN Connectivity Policy Variables Section.
+# SAN Connectivity Policy Variables Section.
 #____________________________________________________________
 
 variable "description" {
@@ -74,9 +74,9 @@ variable "vhbas" {
   default     = []
   description = <<-EOT
     List of vHBAs to add to the SAN Connectivity Policy.
-    * fc_zone_policies - List of FC Zone Policy Names to attach to the vHBA.
-    * fibre_channel_adapter_policy: (required) - The Name of the Fibre Channel Adapter Policy to Assign to the vHBA.
-    * fibre_channel_network_policy: (required) - The Name of the Fibre Channel Network Policy to Assign to the vHBA.
+    * fc_zone_policies - List of FC Zone Policy Names to attach to the vHBA(s).
+    * fibre_channel_adapter_policy: (required) - The Name of the Fibre Channel Adapter Policy to Assign to the vHBA(s).
+    * fibre_channel_network_policies: (required) - The Name(s) of the Fibre Channel Network Policy to Assign to the vHBA(s).
     * fibre_channel_qos_policy: (required) - The Name of the Fibre Channel QoS Policy to Assign to the vHBA.
     * names - Name of the vHBA(s).
     * persistent_lun_bindings: (default is false) - Enables retention of LUN ID associations in memory until they are manually cleared.
@@ -96,25 +96,26 @@ variable "vhbas" {
     * wwpn_allocation_type -  Type of allocation selected to assign a WWPN address to the vhba.
       1. POOL: (default) - The user selects a pool from which the mac/wwn address will be leased for the Virtual Interface.
       2. STATIC - The user assigns a static mac/wwn address for the Virtual Interface.
-    * wwpn_static_address -  The WWPN address must be in hexadecimal format xx:xx:xx:xx:xx:xx:xx:xx.  Allowed ranges are 20:00:00:00:00:00:00:00 to 20:FF:FF:FF:FF:FF:FF:FF or from 50:00:00:00:00:00:00:00 to 5F:FF:FF:FF:FF:FF:FF:FF.  To ensure uniqueness of WWN's in the SAN fabric, you are strongly encouraged to use the WWN prefix - 20:00:00:25:B5:xx:xx:xx.
+    * wwpn_pools: (optional) - A List of one or two wwpn_pools to apply to either a single vHBA or two vHBA(s).
+    * wwpn_static_address: (optional) -  The WWPN address must be in hexadecimal format xx:xx:xx:xx:xx:xx:xx:xx.  Allowed ranges are 20:00:00:00:00:00:00:00 to 20:FF:FF:FF:FF:FF:FF:FF or from 50:00:00:00:00:00:00:00 to 5F:FF:FF:FF:FF:FF:FF:FF.  To ensure uniqueness of WWN's in the SAN fabric, you are strongly encouraged to use the WWN prefix - 20:00:00:25:B5:xx:xx:xx.
   EOT
   type = list(object(
     {
-      fc_zone_policies             = optional(list(string), [])
-      fibre_channel_adapter_policy = string
-      fibre_channel_network_policy = string
-      fibre_channel_qos_policy     = string
-      names                        = list(string)
-      persistent_lun_bindings      = optional(bool, false)
-      placement_pci_link           = optional(list(number), [0])
-      placement_pci_order          = optional(list(string), [0, 1])
-      placement_slot_id            = optional(list(string), ["MLOM"])
-      placement_switch_id          = optional(string, "A")
-      placement_uplink_port        = optional(list(number), [0])
-      vhba_type                    = optional(string, "fc-initiator")
-      wwpn_allocation_type         = optional(string, "POOL")
-      wwpn_pools                   = optional(list(string))
-      wwpn_static_address          = optional(string)
+      fc_zone_policies               = optional(list(string), [])
+      fibre_channel_adapter_policy   = string
+      fibre_channel_network_policies = list(string)
+      fibre_channel_qos_policy       = string
+      names                          = list(string)
+      persistent_lun_bindings        = optional(bool, false)
+      placement_pci_link             = optional(list(number), [0])
+      placement_pci_order            = optional(list(string), [0, 1])
+      placement_slot_id              = optional(list(string), ["MLOM"])
+      placement_switch_id            = optional(string, "A")
+      placement_uplink_port          = optional(list(number), [0])
+      vhba_type                      = optional(string, "fc-initiator")
+      wwpn_allocation_type           = optional(string, "POOL")
+      wwpn_pools                     = optional(list(string))
+      wwpn_static_address            = optional(list(string))
     }
   ))
 }
