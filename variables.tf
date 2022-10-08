@@ -133,7 +133,7 @@ variable "vhbas" {
       vhba_type                      = optional(string, "fc-initiator")
       wwpn_allocation_type           = optional(string, "POOL")
       wwpn_pools                     = optional(list(string))
-      wwpn_static_address            = optional(list(string))
+      wwpn_static_address            = optional(list(string), [])
     }
   ))
 }

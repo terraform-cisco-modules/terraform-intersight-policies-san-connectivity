@@ -44,8 +44,8 @@ module "fibre_channel_network" {
   source  = "terraform-cisco-modules/policies-fibre-channel-network/intersight"
   version = ">=1.0.2"
 
-  for_each     = { for v in ["A", "B"] : v => v }
-  name         = "${var.name}-${each.value}"
+  for_each     = { for v in ["A", "B"] : "${var.name}-${v}" => v }
+  name         = each.key
   organization = "terratest"
   vsan_id      = each.value == "A" ? 100 : 200
 }
@@ -72,7 +72,10 @@ module "main" {
     }
     fibre_channel_network = {
       "${var.name}-A" = {
-        moid = module.fibre_channel_network["${var.name}-A"]
+        moid = module.fibre_channel_network["${var.name}-A"].moid
+      }
+      "${var.name}-B" = {
+        moid = module.fibre_channel_network["${var.name}-B"].moid
       }
     }
     fibre_channel_qos = {
@@ -114,12 +117,8 @@ output "fibre_channel_adapter" {
   value = module.fibre_channel_adapter.moid
 }
 
-output "fibre_channel_network_control" {
-  value = module.fibre_channel_network_control.moid
-}
-
-output "fibre_channel_network_group" {
-  value = module.fibre_channel_network_group.moid
+output "fibre_channel_network" {
+  value = module.fibre_channel_network["${var.name}-A"].moid
 }
 
 output "fibre_channel_qos" {
@@ -135,5 +134,5 @@ output "wwpn_pool" {
 }
 
 output "vHBA-A" {
-  value = module.main.vnics["vHBA-A"]
+  value = module.main.vhbas["vHBA-A"]
 }
