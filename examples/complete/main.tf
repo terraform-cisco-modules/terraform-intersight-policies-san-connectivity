@@ -8,7 +8,7 @@ module "san_connectivity" {
   vhbas = [{
     fc_zone_policies             = []
     fibre_channel_adapter_policy = "default"
-    fibre_channel_network_policy = "default"
+    fibre_channel_network_policy = ["default", "default"]
     fibre_channel_qos_policy     = "default"
     names                        = ["vHBA-A", "vHBA-B"]
     persistent_lun_bindings      = false
