@@ -131,8 +131,8 @@ output "wwnn_pool" {
   value = module.wwnn_pool.moid
 }
 
-output "wwnn_pool" {
-  value = module.wwnn_pool.moid
+output "wwpn_pool" {
+  value = module.wwpn_pool.moid
 }
 
 output "vHBA-A" {
