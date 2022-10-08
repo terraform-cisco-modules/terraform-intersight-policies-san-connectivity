@@ -54,8 +54,8 @@ module "fibre_channel_qos" {
   source  = "terraform-cisco-modules/policies-fibre-channel-qos/intersight"
   version = ">=1.0.2"
 
-  name             = var.name
-  organization     = "terratest"
+  name         = var.name
+  organization = "terratest"
 }
 
 module "main" {
