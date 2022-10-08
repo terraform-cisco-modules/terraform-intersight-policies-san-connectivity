@@ -32,7 +32,7 @@ module "wwpn_pool" {
 }
 
 module "fibre_channel_adapter" {
-  source  = "terraform/policies-fibre-channel-adapter/intersight"
+  source  = "terraform-cisco-modules/policies-fibre-channel-adapter/intersight"
   version = ">=1.0.2"
 
   adapter_template = "VMware"
@@ -41,7 +41,7 @@ module "fibre_channel_adapter" {
 }
 
 module "fibre_channel_network" {
-  source  = "terraform/policies-fibre-channel-network/intersight"
+  source  = "terraform-cisco-modules/policies-fibre-channel-network/intersight"
   version = ">=1.0.2"
 
   for_each     = { for v in ["A", "B"] : v => v }
@@ -51,7 +51,7 @@ module "fibre_channel_network" {
 }
 
 module "fibre_channel_qos" {
-  source  = "terraform/policies-fibre-channel-qos/intersight"
+  source  = "terraform-cisco-modules/policies-fibre-channel-qos/intersight"
   version = ">=1.0.2"
 
   adapter_template = "VMware"
