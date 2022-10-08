@@ -19,7 +19,7 @@ func TestFull(t *testing.T) {
 	// Generate a unique name for objects created in this test to ensure we don't
 	// have collisions with stale objects
 	uniqueId := random.UniqueId()
-	instanceName := fmt.Sprintf("test-policies-san-con-%s", uniqueId)
+	instanceName := fmt.Sprintf("test-sancon-%s", uniqueId)
 
 	// Input variables for the TF module
 	vars := map[string]interface{}{
