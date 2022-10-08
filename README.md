@@ -140,6 +140,7 @@ export TF_VAR_secretkeyfile="<secret-key-file-location>"
 | Name | Description |
 |------|-------------|
 | <a name="output_moid"></a> [moid](#output\_moid) | SAN Connectivity Policy Managed Object ID (moid). |
+| <a name="output_vhbas"></a> [vhbas](#output\_vhbas) | SAN Connectivity Policy vHBA(s) Moid(s). |
 ## Resources
 
 | Name | Type |
